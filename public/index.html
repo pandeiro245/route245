@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sample</title>
+  <meta name="viewport" content="initial-scale=1.0">
+  <meta charset="utf-8">
+  <style>
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+ 
+    #street-view {
+      height: 100%;
+    }
+
+#over-view{
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 200px;
+  background: #ccc;
+  z-index: 99999;
+}
+  </style>
+</head>
+<body>
+ 
+<div id="street-view"></div>
+<div id="over-view">残り24:00</div>
+ 
+<script>
+const WAIT_SECOND = 5;
+const LIMIT = (60 / WAIT_SECOND) * 24;
+// const START_LAT_LNG = {lat: 35.6257742, lng: 139.7231077}; // 五反田
+// const START_LAT_LNG = {lat: 35.844944, lng: 140.661698}; // 土善旅館
+const START_LAT_LNG = {lat: 35.1680743, lng: 139.8199233}; // 金谷ベース
+
+const START_HEADING = 90; // 開始時の方角
+let panorama;
+
+// GoogleMapApi 読み込み時にcallbackで呼び出される
+function initMap() {
+  let Links, count = 0, timer_id;
+
+  // ストリートビューの表示
+  panorama = new google.maps.StreetViewPanorama(
+    document.getElementById('street-view'), {
+      position: START_LAT_LNG,
+      pov: {
+        heading: START_HEADING,
+        pitch: 0
+      },
+      zoom: 1
+    }); // 
+
+  // 画面内のリンクを取得
+  Links = panorama.getLinks();
+
+  // ストリートビューの状態が変更されるたびに実行される
+  google.maps.event.addListener(panorama, 'status_changed', function () { // 
+    if (panorama.getStatus() == "OK") {
+      Links = panorama.getLinks();
+
+      if (count > LIMIT) {
+        alert('24分集中完了！');
+        location.reload();
+      }
+
+      setTimeout(
+        function () {
+          let target = 0;
+          if (Links.length >= 4) {
+            // target = Math.floor(Math.random() * Links.length); // ランダムで選択
+            target = 0
+          } else {
+            //現在向ている方向に近いlinkを選択
+            let val = 360;
+            let currentPov = panorama.getPov();
+            Links.forEach(function (element, index) {
+              let ans = Math.abs(currentPov.heading - element.heading);
+              if (val > ans) {
+                val = ans;
+                target = index;
+              }
+            });
+          }
+          // 次に移動するLink先に向きを変える
+          console.log(Links);
+          console.log(target);
+          panorama.setPov({
+            heading: Links[target].heading,
+            pitch: 0
+          });
+          // 次のストリートビューに移動する
+          panorama.setPano(Links[target]['pano']);
+          count++;
+          remain = 24 * 60 - count * 5;
+          min = parseInt(remain / 60);
+          sec = remain - min * 60
+          document.getElementById('over-view').innerHTML = '残り'+ min + ':' + sec;
+        },
+        WAIT_SECOND * 1000
+      );
+    }
+  });
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3dGkF7iYkFxxqzf5YS7Q5FCqWx0oq4vI&callback=initMap"
+    async defer></script>
+</body>
+</html>
+

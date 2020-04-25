@@ -15,5 +15,6 @@ module Route245
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
+    config.hosts << "a7e08704b4dc4c00912fe22aacac00df.vfs.cloud9.ap-northeast-1.amazonaws.com"
   end
 end
