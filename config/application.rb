@@ -16,5 +16,6 @@ module Route245
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
     config.hosts << "a7e08704b4dc4c00912fe22aacac00df.vfs.cloud9.ap-northeast-1.amazonaws.com"
+    config.hosts << "route245.herokuapp.com"
   end
 end
