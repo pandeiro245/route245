@@ -39,7 +39,7 @@ const LIMIT = (60 / WAIT_SECOND) * 24;
 // const START_LAT_LNG = {lat: 35.844944, lng: 140.661698}; // 土善旅館
 // const START_LAT_LNG = {lat: 35.1680743, lng: 139.8199233}; // 金谷ベース
 // const START_LAT_LNG = {lat: 35.6626753, lng: 139.7308336}; // roppongi
-const START_LAT_LNG = {lat: 35.6691694, lng: 139.7011249}; // yoyogi park
+const START_LAT_LNG = {lat: 35.66916851878442, lng: 139.7002243543353}; // yoyogi park
 
 const START_HEADING = 270; // 開始時の方角
 let panorama;
@@ -63,7 +63,8 @@ function initMap() {
   Links = panorama.getLinks();
 
   // ストリートビューの状態が変更されるたびに実行される
-  google.maps.event.addListener(panorama, 'status_changed', function () { // 
+  google.maps.event.addListener(panorama, 'status_changed', function () {
+    console.log(9999);
     if (panorama.getStatus() == "OK") {
       Links = panorama.getLinks();
 
@@ -77,7 +78,8 @@ function initMap() {
           let target = 0;
           if (Links.length >= 4) {
             // target = Math.floor(Math.random() * Links.length); // ランダムで選択
-            target = 0
+            // target = 0
+            target = Links.length - 1
           } else {
             //現在向ている方向に近いlinkを選択
             let val = 360;
@@ -103,7 +105,7 @@ function initMap() {
           remain = 24 * 60 - count * 5;
           min = parseInt(remain / 60);
           sec = remain - min * 60
-          document.getElementById('over-view').innerHTML = '残り'+ min + ':' + sec;
+          document.getElementById('over-view').innerHTML = '残り'+ min + ':' + sec + '<br/>lat: ' + panorama.getPosition()["lat"]() + ', lng: ' + panorama.getPosition()["lng"]()
         },
         WAIT_SECOND * 1000
       );
