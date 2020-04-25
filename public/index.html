@@ -13,8 +13,12 @@
     }
  
     #street-view {
-      height: 100%;
+      height: 50%;
     }
+    #map-view {
+      height: 50%;
+    }
+
 
 #over-view{
   position: absolute;
@@ -30,6 +34,7 @@
 <body>
  
 <div id="street-view"></div>
+<div id="map-view"></div>
 <div id="over-view">残り24:00</div>
  
 <script>
@@ -44,10 +49,14 @@ const START_LAT_LNG = {lat: 35.6259742, lng: 139.7231077}; // 五反田
 // const START_LAT_LNG = {lat: 35.1680743, lng: 139.8199233}; // 金谷ベース
 // const START_LAT_LNG = {lat: 35.6626753, lng: 139.7308336}; // roppongi
 // const START_LAT_LNG = {lat: 35.66916851878442, lng: 139.7002243543353}; // yoyogi park
+// const START_LAT_LNG = {lat: 35.712996, lng: 139.7049736}; // takadano baba
+// const START_LAT_LNG = {lat: 35.712996, lng: 139.7048636}; // takadano baba
 
 const START_HEADING = 270; // 開始時の方角
 let panorama;
 locations = {};
+
+
 
 // GoogleMapApi 読み込み時にcallbackで呼び出される
 function initMap() {
@@ -62,7 +71,13 @@ function initMap() {
         pitch: 0
       },
       zoom: 1
-    }); // 
+    }
+  );
+
+  map = new google.maps.Map(document.getElementById("map-view"), {
+    zoom : 18,
+    center: new google.maps.LatLng(START_LAT_LNG.lat, START_LAT_LNG.lng)
+  });
 
   // 画面内のリンクを取得
   Links = panorama.getLinks();
@@ -83,6 +98,13 @@ function initMap() {
           lat = panorama.getPosition()["lat"]();
           lng = panorama.getPosition()["lng"]();
           key = lat + ',' + lng;
+
+          map.panTo(new google.maps.LatLng(lat, lng))
+
+          marker = new google.maps.Marker({ // マーカーの追加
+            position: {lat: lat, lng: lng}, // マーカーを立てる位置を指定
+            map: map // マーカーを立てる地図を指定
+          });
 
           //現在向ている方向に近いlinkを選択
           let val = 360;
@@ -137,8 +159,7 @@ function initMap() {
   });
 }
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3dGkF7iYkFxxqzf5YS7Q5FCqWx0oq4vI&callback=initMap"
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3dGkF7iYkFxxqzf5YS7Q5FCqWx0oq4vI&callback=initMap&v=3&libraries=drawing"
     async defer></script>
 </body>
 </html>
-
