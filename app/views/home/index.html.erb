@@ -9,7 +9,7 @@ const LIMIT = (60 / WAIT_SECOND) * 24;
 let panorama;
 let heading, lat, lng;
 let locations = {};
-let Links;
+let Links, goal_heading;
 
 if(location.hash.length < 3){
   // takadano baba
@@ -90,14 +90,36 @@ function initMap() {
 					let goal_point = turf.point([goal[1], goal[0]]);
 					let current_point = turf.point([lng, lat]);
           let val = 360;
-          let goal_heading = turf.bearing(current_point, goal_point);
+          goal_heading = turf.bearing(current_point, goal_point);
+          if(goal_heading < 0){
+            goal_heading += 360;
+          }
+
+          data = {
+            goal_heading: goal_heading,
+            links: []
+          };
+
+
           Links.forEach(function (element, index) {
             let ans = Math.abs(goal_heading - element.heading);
+
+            let link = {
+              ans: ans,
+              heading: element.heading,
+            };
+
             if (val > ans) {
               val = ans;
               target = index;
             }
+            data['links'].push(link);
           });
+
+          data['target_heading'] = Links[target].heading
+          data['target_ans'] = Math.abs(goal_heading - Links[target].heading);
+          
+          console.log(data);
 
 					key = lat + ',' + lng;
           if(typeof(locations[key]) != 'undefined') {
@@ -107,12 +129,12 @@ function initMap() {
               } else {
                 target = Links.length - 1;
               }
-              console.log('more than twice')
+              // console.log('more than twice')
             } else {
-              console.log('first direction')
+              // console.log('first direction')
             }
           } else {
-            console.log('first spot')
+            // console.log('first spot')
           }
 
           heading = Links[target].heading
